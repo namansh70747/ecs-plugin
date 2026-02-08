@@ -3,7 +3,9 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"strings"
 
+	"ecs-plugin-dev/internal/audit"
 	"ecs-plugin-dev/internal/plugin"
 	pb "ecs-plugin-dev/proto"
 )
@@ -79,6 +81,77 @@ func (s *DeploymentServer) Rollback(ctx context.Context, req *pb.RollbackRequest
 	return &pb.RollbackResponse{
 		Success: true,
 		Message: "rollback initiated successfully",
+	}, nil
+}
+
+func classifyError(err error) (string, string) {
+	if err == nil {
+		return "", ""
+	}
+
+	errMsg := err.Error()
+
+	// Validation errors
+	if strings.Contains(errMsg, "cannot be empty") || strings.Contains(errMsg, "invalid") {
+		return "VALIDATION_ERROR", "Request validation failed"
+	}
+
+	// AWS errors
+	if strings.Contains(errMsg, "failed to") && (strings.Contains(errMsg, "describe") || strings.Contains(errMsg, "update") || strings.Contains(errMsg, "register")) {
+		return "AWS_API_ERROR", "AWS API call failed"
+	}
+
+	// Timeout errors
+	if strings.Contains(errMsg, "timeout") || strings.Contains(errMsg, "deadline") {
+		return "TIMEOUT_ERROR", "Operation timed out"
+	}
+
+	// Context errors
+	if strings.Contains(errMsg, "context canceled") {
+		return "CANCELLED_ERROR", "Deployment was cancelled"
+	}
+
+	// Health check errors
+	if strings.Contains(errMsg, "health") || strings.Contains(errMsg, "unhealthy") {
+		return "HEALTH_CHECK_ERROR", "Service health check failed"
+	}
+
+	// Default
+	return "INTERNAL_ERROR", "Internal server error"
+}
+
+func (s *DeploymentServer) ApproveDeployment(ctx context.Context, req *pb.ApprovalRequest) (*pb.ApprovalResponse, error) {
+	if req.DeploymentId == "" {
+		return &pb.ApprovalResponse{
+			Success: false,
+			Message: "deployment_id is required",
+		}, nil
+	}
+
+	err := s.router.ApproveDeployment(ctx, req.DeploymentId, req.Approved, req.Approver, req.Reason)
+	if err != nil {
+		return &pb.ApprovalResponse{
+			Success: false,
+			Message: err.Error(),
+		}, nil
+	}
+
+	if auditLogger := audit.GetGlobalAuditLogger(); auditLogger != nil {
+		if req.Approved {
+			auditLogger.LogApprovalGranted(req.DeploymentId, req.Approver, req.Reason)
+		} else {
+			auditLogger.Log(audit.AuditEvent{
+				EventType:    audit.EventApprovalRejected,
+				DeploymentID: req.DeploymentId,
+				User:         req.Approver,
+				Status:       "rejected",
+			})
+		}
+	}
+
+	return &pb.ApprovalResponse{
+		Success: true,
+		Message: fmt.Sprintf("Deployment %s", map[bool]string{true: "approved", false: "rejected"}[req.Approved]),
 	}, nil
 }
 

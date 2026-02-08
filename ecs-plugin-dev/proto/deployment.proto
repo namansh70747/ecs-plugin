@@ -7,6 +7,7 @@ service DeploymentService {
     rpc Deploy(DeployRequest) returns (DeployResponse);
     rpc GetStatus(StatusRequest) returns (StatusResponse);
     rpc Rollback(RollbackRequest) returns (RollbackResponse);
+    rpc ApproveDeployment(ApprovalRequest) returns (ApprovalResponse);
 }
 
 message DeployRequest {
@@ -16,12 +17,16 @@ message DeployRequest {
     string task_definition = 4;
     string strategy = 5;
     map<string, string> config = 6;
+    bool require_approval = 7;
 }
 
 message DeployResponse {
     bool success = 1;
     string message = 2;
     string deployment_id = 3;
+    string error_code = 4;
+    string error_details = 5;
+    bool pending_approval = 6;
 }
 
 message StatusRequest {
@@ -32,6 +37,8 @@ message StatusResponse {
     string status = 1;
     string message = 2;
     int32 progress = 3;
+    string error_code = 4;
+    string error_details = 5;
 }
 
 message RollbackRequest {
@@ -41,6 +48,20 @@ message RollbackRequest {
 }
 
 message RollbackResponse {
+    bool success = 1;
+    string message = 2;
+    string error_code = 3;
+    string error_details = 4;
+}
+
+message ApprovalRequest {
+    string deployment_id = 1;
+    bool approved = 2;
+    string approver = 3;
+    string reason = 4;
+}
+
+message ApprovalResponse {
     bool success = 1;
     string message = 2;
 }

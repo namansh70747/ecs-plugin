@@ -15,11 +15,11 @@ proto:
 
 build-server:
 	mkdir -p $(BIN_DIR)
-	go build -o $(BIN_DIR)/grpc-server cmd/grpc-server/main.go
+	go build -mod=mod -o $(BIN_DIR)/grpc-server cmd/grpc-server/main.go
 
 build-client:
 	mkdir -p $(BIN_DIR)
-	go build -o $(BIN_DIR)/grpc-client cmd/grpc-client/main.go
+	go build -mod=mod -o $(BIN_DIR)/grpc-client cmd/grpc-client/main.go
 
 build: proto build-server build-client
 

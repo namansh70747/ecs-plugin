@@ -24,15 +24,16 @@ const (
 )
 
 type DeployRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	DeploymentId   string                 `protobuf:"bytes,1,opt,name=deployment_id,json=deploymentId,proto3" json:"deployment_id,omitempty"`
-	ClusterArn     string                 `protobuf:"bytes,2,opt,name=cluster_arn,json=clusterArn,proto3" json:"cluster_arn,omitempty"`
-	ServiceName    string                 `protobuf:"bytes,3,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
-	TaskDefinition string                 `protobuf:"bytes,4,opt,name=task_definition,json=taskDefinition,proto3" json:"task_definition,omitempty"`
-	Strategy       string                 `protobuf:"bytes,5,opt,name=strategy,proto3" json:"strategy,omitempty"`
-	Config         map[string]string      `protobuf:"bytes,6,rep,name=config,proto3" json:"config,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	DeploymentId    string                 `protobuf:"bytes,1,opt,name=deployment_id,json=deploymentId,proto3" json:"deployment_id,omitempty"`
+	ClusterArn      string                 `protobuf:"bytes,2,opt,name=cluster_arn,json=clusterArn,proto3" json:"cluster_arn,omitempty"`
+	ServiceName     string                 `protobuf:"bytes,3,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	TaskDefinition  string                 `protobuf:"bytes,4,opt,name=task_definition,json=taskDefinition,proto3" json:"task_definition,omitempty"`
+	Strategy        string                 `protobuf:"bytes,5,opt,name=strategy,proto3" json:"strategy,omitempty"`
+	Config          map[string]string      `protobuf:"bytes,6,rep,name=config,proto3" json:"config,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	RequireApproval bool                   `protobuf:"varint,7,opt,name=require_approval,json=requireApproval,proto3" json:"require_approval,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *DeployRequest) Reset() {
@@ -107,13 +108,23 @@ func (x *DeployRequest) GetConfig() map[string]string {
 	return nil
 }
 
+func (x *DeployRequest) GetRequireApproval() bool {
+	if x != nil {
+		return x.RequireApproval
+	}
+	return false
+}
+
 type DeployResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	DeploymentId  string                 `protobuf:"bytes,3,opt,name=deployment_id,json=deploymentId,proto3" json:"deployment_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Success         bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message         string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	DeploymentId    string                 `protobuf:"bytes,3,opt,name=deployment_id,json=deploymentId,proto3" json:"deployment_id,omitempty"`
+	ErrorCode       string                 `protobuf:"bytes,4,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	ErrorDetails    string                 `protobuf:"bytes,5,opt,name=error_details,json=errorDetails,proto3" json:"error_details,omitempty"`
+	PendingApproval bool                   `protobuf:"varint,6,opt,name=pending_approval,json=pendingApproval,proto3" json:"pending_approval,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *DeployResponse) Reset() {
@@ -167,6 +178,27 @@ func (x *DeployResponse) GetDeploymentId() string {
 	return ""
 }
 
+func (x *DeployResponse) GetErrorCode() string {
+	if x != nil {
+		return x.ErrorCode
+	}
+	return ""
+}
+
+func (x *DeployResponse) GetErrorDetails() string {
+	if x != nil {
+		return x.ErrorDetails
+	}
+	return ""
+}
+
+func (x *DeployResponse) GetPendingApproval() bool {
+	if x != nil {
+		return x.PendingApproval
+	}
+	return false
+}
+
 type StatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	DeploymentId  string                 `protobuf:"bytes,1,opt,name=deployment_id,json=deploymentId,proto3" json:"deployment_id,omitempty"`
@@ -216,6 +248,8 @@ type StatusResponse struct {
 	Status        string                 `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	Progress      int32                  `protobuf:"varint,3,opt,name=progress,proto3" json:"progress,omitempty"`
+	ErrorCode     string                 `protobuf:"bytes,4,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	ErrorDetails  string                 `protobuf:"bytes,5,opt,name=error_details,json=errorDetails,proto3" json:"error_details,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -269,6 +303,20 @@ func (x *StatusResponse) GetProgress() int32 {
 		return x.Progress
 	}
 	return 0
+}
+
+func (x *StatusResponse) GetErrorCode() string {
+	if x != nil {
+		return x.ErrorCode
+	}
+	return ""
+}
+
+func (x *StatusResponse) GetErrorDetails() string {
+	if x != nil {
+		return x.ErrorDetails
+	}
+	return ""
 }
 
 type RollbackRequest struct {
@@ -335,6 +383,8 @@ type RollbackResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	ErrorCode     string                 `protobuf:"bytes,3,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	ErrorDetails  string                 `protobuf:"bytes,4,opt,name=error_details,json=errorDetails,proto3" json:"error_details,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -383,12 +433,146 @@ func (x *RollbackResponse) GetMessage() string {
 	return ""
 }
 
+func (x *RollbackResponse) GetErrorCode() string {
+	if x != nil {
+		return x.ErrorCode
+	}
+	return ""
+}
+
+func (x *RollbackResponse) GetErrorDetails() string {
+	if x != nil {
+		return x.ErrorDetails
+	}
+	return ""
+}
+
+type ApprovalRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DeploymentId  string                 `protobuf:"bytes,1,opt,name=deployment_id,json=deploymentId,proto3" json:"deployment_id,omitempty"`
+	Approved      bool                   `protobuf:"varint,2,opt,name=approved,proto3" json:"approved,omitempty"`
+	Approver      string                 `protobuf:"bytes,3,opt,name=approver,proto3" json:"approver,omitempty"`
+	Reason        string                 `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ApprovalRequest) Reset() {
+	*x = ApprovalRequest{}
+	mi := &file_proto_deployment_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ApprovalRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApprovalRequest) ProtoMessage() {}
+
+func (x *ApprovalRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_deployment_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApprovalRequest.ProtoReflect.Descriptor instead.
+func (*ApprovalRequest) Descriptor() ([]byte, []int) {
+	return file_proto_deployment_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ApprovalRequest) GetDeploymentId() string {
+	if x != nil {
+		return x.DeploymentId
+	}
+	return ""
+}
+
+func (x *ApprovalRequest) GetApproved() bool {
+	if x != nil {
+		return x.Approved
+	}
+	return false
+}
+
+func (x *ApprovalRequest) GetApprover() string {
+	if x != nil {
+		return x.Approver
+	}
+	return ""
+}
+
+func (x *ApprovalRequest) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+type ApprovalResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ApprovalResponse) Reset() {
+	*x = ApprovalResponse{}
+	mi := &file_proto_deployment_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ApprovalResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApprovalResponse) ProtoMessage() {}
+
+func (x *ApprovalResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_deployment_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApprovalResponse.ProtoReflect.Descriptor instead.
+func (*ApprovalResponse) Descriptor() ([]byte, []int) {
+	return file_proto_deployment_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ApprovalResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *ApprovalResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_proto_deployment_proto protoreflect.FileDescriptor
 
 const file_proto_deployment_proto_rawDesc = "" +
 	"\n" +
 	"\x16proto/deployment.proto\x12\n" +
-	"deployment\"\xb7\x02\n" +
+	"deployment\"\xe2\x02\n" +
 	"\rDeployRequest\x12#\n" +
 	"\rdeployment_id\x18\x01 \x01(\tR\fdeploymentId\x12\x1f\n" +
 	"\vcluster_arn\x18\x02 \x01(\tR\n" +
@@ -396,32 +580,52 @@ const file_proto_deployment_proto_rawDesc = "" +
 	"\fservice_name\x18\x03 \x01(\tR\vserviceName\x12'\n" +
 	"\x0ftask_definition\x18\x04 \x01(\tR\x0etaskDefinition\x12\x1a\n" +
 	"\bstrategy\x18\x05 \x01(\tR\bstrategy\x12=\n" +
-	"\x06config\x18\x06 \x03(\v2%.deployment.DeployRequest.ConfigEntryR\x06config\x1a9\n" +
+	"\x06config\x18\x06 \x03(\v2%.deployment.DeployRequest.ConfigEntryR\x06config\x12)\n" +
+	"\x10require_approval\x18\a \x01(\bR\x0frequireApproval\x1a9\n" +
 	"\vConfigEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"i\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd8\x01\n" +
 	"\x0eDeployResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12#\n" +
-	"\rdeployment_id\x18\x03 \x01(\tR\fdeploymentId\"4\n" +
+	"\rdeployment_id\x18\x03 \x01(\tR\fdeploymentId\x12\x1d\n" +
+	"\n" +
+	"error_code\x18\x04 \x01(\tR\terrorCode\x12#\n" +
+	"\rerror_details\x18\x05 \x01(\tR\ferrorDetails\x12)\n" +
+	"\x10pending_approval\x18\x06 \x01(\bR\x0fpendingApproval\"4\n" +
 	"\rStatusRequest\x12#\n" +
-	"\rdeployment_id\x18\x01 \x01(\tR\fdeploymentId\"^\n" +
+	"\rdeployment_id\x18\x01 \x01(\tR\fdeploymentId\"\xa2\x01\n" +
 	"\x0eStatusResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1a\n" +
-	"\bprogress\x18\x03 \x01(\x05R\bprogress\"z\n" +
+	"\bprogress\x18\x03 \x01(\x05R\bprogress\x12\x1d\n" +
+	"\n" +
+	"error_code\x18\x04 \x01(\tR\terrorCode\x12#\n" +
+	"\rerror_details\x18\x05 \x01(\tR\ferrorDetails\"z\n" +
 	"\x0fRollbackRequest\x12#\n" +
 	"\rdeployment_id\x18\x01 \x01(\tR\fdeploymentId\x12\x1f\n" +
 	"\vcluster_arn\x18\x02 \x01(\tR\n" +
 	"clusterArn\x12!\n" +
-	"\fservice_name\x18\x03 \x01(\tR\vserviceName\"F\n" +
+	"\fservice_name\x18\x03 \x01(\tR\vserviceName\"\x8a\x01\n" +
 	"\x10RollbackResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\xdf\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1d\n" +
+	"\n" +
+	"error_code\x18\x03 \x01(\tR\terrorCode\x12#\n" +
+	"\rerror_details\x18\x04 \x01(\tR\ferrorDetails\"\x86\x01\n" +
+	"\x0fApprovalRequest\x12#\n" +
+	"\rdeployment_id\x18\x01 \x01(\tR\fdeploymentId\x12\x1a\n" +
+	"\bapproved\x18\x02 \x01(\bR\bapproved\x12\x1a\n" +
+	"\bapprover\x18\x03 \x01(\tR\bapprover\x12\x16\n" +
+	"\x06reason\x18\x04 \x01(\tR\x06reason\"F\n" +
+	"\x10ApprovalResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\xaf\x02\n" +
 	"\x11DeploymentService\x12?\n" +
 	"\x06Deploy\x12\x19.deployment.DeployRequest\x1a\x1a.deployment.DeployResponse\x12B\n" +
 	"\tGetStatus\x12\x19.deployment.StatusRequest\x1a\x1a.deployment.StatusResponse\x12E\n" +
-	"\bRollback\x12\x1b.deployment.RollbackRequest\x1a\x1c.deployment.RollbackResponseB\x16Z\x14ecs-plugin-dev/protob\x06proto3"
+	"\bRollback\x12\x1b.deployment.RollbackRequest\x1a\x1c.deployment.RollbackResponse\x12N\n" +
+	"\x11ApproveDeployment\x12\x1b.deployment.ApprovalRequest\x1a\x1c.deployment.ApprovalResponseB\x16Z\x14ecs-plugin-dev/protob\x06proto3"
 
 var (
 	file_proto_deployment_proto_rawDescOnce sync.Once
@@ -435,7 +639,7 @@ func file_proto_deployment_proto_rawDescGZIP() []byte {
 	return file_proto_deployment_proto_rawDescData
 }
 
-var file_proto_deployment_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_proto_deployment_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_proto_deployment_proto_goTypes = []any{
 	(*DeployRequest)(nil),    // 0: deployment.DeployRequest
 	(*DeployResponse)(nil),   // 1: deployment.DeployResponse
@@ -443,18 +647,22 @@ var file_proto_deployment_proto_goTypes = []any{
 	(*StatusResponse)(nil),   // 3: deployment.StatusResponse
 	(*RollbackRequest)(nil),  // 4: deployment.RollbackRequest
 	(*RollbackResponse)(nil), // 5: deployment.RollbackResponse
-	nil,                      // 6: deployment.DeployRequest.ConfigEntry
+	(*ApprovalRequest)(nil),  // 6: deployment.ApprovalRequest
+	(*ApprovalResponse)(nil), // 7: deployment.ApprovalResponse
+	nil,                      // 8: deployment.DeployRequest.ConfigEntry
 }
 var file_proto_deployment_proto_depIdxs = []int32{
-	6, // 0: deployment.DeployRequest.config:type_name -> deployment.DeployRequest.ConfigEntry
+	8, // 0: deployment.DeployRequest.config:type_name -> deployment.DeployRequest.ConfigEntry
 	0, // 1: deployment.DeploymentService.Deploy:input_type -> deployment.DeployRequest
 	2, // 2: deployment.DeploymentService.GetStatus:input_type -> deployment.StatusRequest
 	4, // 3: deployment.DeploymentService.Rollback:input_type -> deployment.RollbackRequest
-	1, // 4: deployment.DeploymentService.Deploy:output_type -> deployment.DeployResponse
-	3, // 5: deployment.DeploymentService.GetStatus:output_type -> deployment.StatusResponse
-	5, // 6: deployment.DeploymentService.Rollback:output_type -> deployment.RollbackResponse
-	4, // [4:7] is the sub-list for method output_type
-	1, // [1:4] is the sub-list for method input_type
+	6, // 4: deployment.DeploymentService.ApproveDeployment:input_type -> deployment.ApprovalRequest
+	1, // 5: deployment.DeploymentService.Deploy:output_type -> deployment.DeployResponse
+	3, // 6: deployment.DeploymentService.GetStatus:output_type -> deployment.StatusResponse
+	5, // 7: deployment.DeploymentService.Rollback:output_type -> deployment.RollbackResponse
+	7, // 8: deployment.DeploymentService.ApproveDeployment:output_type -> deployment.ApprovalResponse
+	5, // [5:9] is the sub-list for method output_type
+	1, // [1:5] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -471,7 +679,7 @@ func file_proto_deployment_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_deployment_proto_rawDesc), len(file_proto_deployment_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

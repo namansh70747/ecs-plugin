@@ -21,9 +21,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	DeploymentService_Deploy_FullMethodName    = "/deployment.DeploymentService/Deploy"
-	DeploymentService_GetStatus_FullMethodName = "/deployment.DeploymentService/GetStatus"
-	DeploymentService_Rollback_FullMethodName  = "/deployment.DeploymentService/Rollback"
+	DeploymentService_Deploy_FullMethodName            = "/deployment.DeploymentService/Deploy"
+	DeploymentService_GetStatus_FullMethodName         = "/deployment.DeploymentService/GetStatus"
+	DeploymentService_Rollback_FullMethodName          = "/deployment.DeploymentService/Rollback"
+	DeploymentService_ApproveDeployment_FullMethodName = "/deployment.DeploymentService/ApproveDeployment"
 )
 
 // DeploymentServiceClient is the client API for DeploymentService service.
@@ -33,6 +34,7 @@ type DeploymentServiceClient interface {
 	Deploy(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (*DeployResponse, error)
 	GetStatus(ctx context.Context, in *StatusRequest, opts ...grpc.CallOption) (*StatusResponse, error)
 	Rollback(ctx context.Context, in *RollbackRequest, opts ...grpc.CallOption) (*RollbackResponse, error)
+	ApproveDeployment(ctx context.Context, in *ApprovalRequest, opts ...grpc.CallOption) (*ApprovalResponse, error)
 }
 
 type deploymentServiceClient struct {
@@ -70,6 +72,15 @@ func (c *deploymentServiceClient) Rollback(ctx context.Context, in *RollbackRequ
 	return out, nil
 }
 
+func (c *deploymentServiceClient) ApproveDeployment(ctx context.Context, in *ApprovalRequest, opts ...grpc.CallOption) (*ApprovalResponse, error) {
+	out := new(ApprovalResponse)
+	err := c.cc.Invoke(ctx, DeploymentService_ApproveDeployment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DeploymentServiceServer is the server API for DeploymentService service.
 // All implementations must embed UnimplementedDeploymentServiceServer
 // for forward compatibility
@@ -77,6 +88,7 @@ type DeploymentServiceServer interface {
 	Deploy(context.Context, *DeployRequest) (*DeployResponse, error)
 	GetStatus(context.Context, *StatusRequest) (*StatusResponse, error)
 	Rollback(context.Context, *RollbackRequest) (*RollbackResponse, error)
+	ApproveDeployment(context.Context, *ApprovalRequest) (*ApprovalResponse, error)
 	mustEmbedUnimplementedDeploymentServiceServer()
 }
 
@@ -92,6 +104,9 @@ func (UnimplementedDeploymentServiceServer) GetStatus(context.Context, *StatusRe
 }
 func (UnimplementedDeploymentServiceServer) Rollback(context.Context, *RollbackRequest) (*RollbackResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Rollback not implemented")
+}
+func (UnimplementedDeploymentServiceServer) ApproveDeployment(context.Context, *ApprovalRequest) (*ApprovalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ApproveDeployment not implemented")
 }
 func (UnimplementedDeploymentServiceServer) mustEmbedUnimplementedDeploymentServiceServer() {}
 
@@ -160,6 +175,24 @@ func _DeploymentService_Rollback_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DeploymentService_ApproveDeployment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApprovalRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeploymentServiceServer).ApproveDeployment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeploymentService_ApproveDeployment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeploymentServiceServer).ApproveDeployment(ctx, req.(*ApprovalRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DeploymentService_ServiceDesc is the grpc.ServiceDesc for DeploymentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -178,6 +211,10 @@ var DeploymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Rollback",
 			Handler:    _DeploymentService_Rollback_Handler,
+		},
+		{
+			MethodName: "ApproveDeployment",
+			Handler:    _DeploymentService_ApproveDeployment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

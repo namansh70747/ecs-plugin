@@ -1,0 +1,32 @@
+# ECS Deployment Plugin Configuration
+
+server:
+  port: 50051
+  graceful_timeout: 30s
+  enable_metrics: true
+  metrics_port: 9090
+
+aws:
+  timeout: 30s
+  max_retries: 3
+  retry_delay: 1s
+  max_retry_delay: 30s
+
+strategy:
+  timeout: 10m
+  canary:
+    # Multi-stage canary rollout percentages
+    stages: [20, 50, 100]
+    # Time to wait at each stage
+    stage_timeout: 2m
+  bluegreen:
+    # Time to wait for green environment stabilization
+    stabilization_time: 30s
+    # Delay before cleanup of blue environment
+    cleanup_delay: 1m
+
+hooks:
+  # Commands to run before deployment
+  pre_deploy: []
+  # Commands to run after deployment
+  post_deploy: []
