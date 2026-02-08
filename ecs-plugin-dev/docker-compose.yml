@@ -1,0 +1,13 @@
+services:
+  localstack:
+    image: localstack/localstack:3.0
+    container_name: ecs-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=ecs,elbv2,ec2,logs
+      - DEBUG=1
+      - PERSISTENCE=0
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"

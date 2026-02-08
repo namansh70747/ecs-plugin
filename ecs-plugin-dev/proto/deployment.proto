@@ -1,0 +1,46 @@
+// proto/deployment.proto
+syntax = "proto3";
+package deployment;
+option go_package = "ecs-plugin-dev/proto";
+
+service DeploymentService {
+    rpc Deploy(DeployRequest) returns (DeployResponse);
+    rpc GetStatus(StatusRequest) returns (StatusResponse);
+    rpc Rollback(RollbackRequest) returns (RollbackResponse);
+}
+
+message DeployRequest {
+    string deployment_id = 1;
+    string cluster_arn = 2;
+    string service_name = 3;
+    string task_definition = 4;
+    string strategy = 5;
+    map<string, string> config = 6;
+}
+
+message DeployResponse {
+    bool success = 1;
+    string message = 2;
+    string deployment_id = 3;
+}
+
+message StatusRequest {
+    string deployment_id = 1;
+}
+
+message StatusResponse {
+    string status = 1;
+    string message = 2;
+    int32 progress = 3;
+}
+
+message RollbackRequest {
+    string deployment_id = 1;
+    string cluster_arn = 2;
+    string service_name = 3;
+}
+
+message RollbackResponse {
+    bool success = 1;
+    string message = 2;
+}
