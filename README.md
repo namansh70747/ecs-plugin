@@ -764,10 +764,6 @@ For issues or questions:
 - Check metrics: `curl http://localhost:9090/metrics`
 - Verify AWS connectivity: Check CloudWatch for AWS API calls
 
-## License
-
-Proprietary - LFX Mentorship 2025
-
 ## Author
 
 Naman Sharma - ECS Deployment Plugin Implementation
